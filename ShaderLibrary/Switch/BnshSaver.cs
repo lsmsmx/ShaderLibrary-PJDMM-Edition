@@ -134,7 +134,10 @@ namespace ShaderLibrary
 
                 writer.Write((ulong)(variationPos + i * 64)); //variation offset
                 var reflectionOffset = writer.SaveOffset();
-                writer.Write(new byte[32]); //reserved
+                writer.Write(prog.header.BinaryOffset);
+                writer.Write(prog.header.ParentBnshOffset);
+                writer.Write(prog.header.Reserved5);
+                writer.Write(prog.header.Reserved6);
 
                 long[] controlCodeOffsets = new long[6];
 
@@ -169,10 +172,7 @@ namespace ShaderLibrary
                 long[] stageReflectOffsets = new long[6];
 
                 //reflection
-                if (prog.VertexShaderReflection != null || 
-                    prog.FragmentShaderReflection != null ||
-                    prog.GeometryShaderReflection != null ||
-                    prog.ComputeShaderReflection != null)
+                if (prog.HasReflectionArray)
                 {
                     writer.WriteOffset(reflectionOffset);
 
@@ -180,7 +180,7 @@ namespace ShaderLibrary
                     for (int j = 0; j < 6; j++)
                         stageReflectOffsets[j] = writer.SaveOffset();
 
-                    writer.Write(new byte[16]); //reserved
+                    writer.Write(new byte[168]); //reserved
                 }
 
                 void SaveControlCode(BnshFile.ShaderCode code, int idx)
@@ -292,6 +292,9 @@ namespace ShaderLibrary
                         writer.Write(data.Slots);
                     }
                 }
+
+                writer.Write(new byte[BnshPatcherCore.GetBlock2Size(bnsh.OriginalBytes)]);
+
             }
 
             writer.AlignBytes(8);
@@ -371,6 +374,7 @@ namespace ShaderLibrary
 
                         writer.WriteOffset(offset_save);
                         writer.Write(data);
+
                     }
                 }
 
@@ -405,14 +409,15 @@ namespace ShaderLibrary
 
             uint stringPoolOffset = (uint)writer.Position;
 
-            StringTable.Write(writer);
+            //StringTable.Write(writer);
 
             //relocation table section 5 start/end
             RelocationTable.SetRelocationSection(5, (uint)stringPoolOffset, (uint)writer.BaseStream.Position - stringPoolOffset);
 
-            RelocationTable.Write(writer);
+            //RelocationTable.Write(writer);
 
-            writer.WriteHeaderBlocks();
+            //writer.WriteHeaderBlocks();
+
 
             //file size
             using (writer.BaseStream.TemporarySeek(this._fileSizePos, SeekOrigin.Begin))

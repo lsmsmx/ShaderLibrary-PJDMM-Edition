@@ -240,7 +240,7 @@ namespace ShaderLibrary
         public ushort Padding;
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct BnshHeader
     {
         public uint Magic;
@@ -313,7 +313,7 @@ namespace ShaderLibrary
         public ulong Reserved8;
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct BnshShaderReflectionHeader
     {
         public ulong InputDictionaryOffset;

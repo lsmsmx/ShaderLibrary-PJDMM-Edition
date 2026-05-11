@@ -142,7 +142,7 @@ namespace ShaderLibrary.IO
 
         private void WriteDictionary<T>(ResDict<T> resDict) where T : IResData, new()
         {
-            resDict.GenerateTree();
+            //resDict.GenerateTree();
             var nodes = resDict.GetNodes();
 
             this.WriteSignature("_DIC");

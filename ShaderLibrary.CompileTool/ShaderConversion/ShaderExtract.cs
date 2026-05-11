@@ -37,7 +37,7 @@ namespace EffectLibraryTest
             if (shaderCode == null)
                 return;
 
-            var control_code = new ControlShader(shaderCode.ControlCode);
+            var control_code = new ShaderLibrary.ControlShader(shaderCode.ControlCode);
             float[] constants = control_code.GetConstantsAsFloats(shaderCode.ByteCode);
             byte[] raw = control_code.GetConstants(shaderCode.ByteCode);
             File.WriteAllBytes("Constants.bin", raw);
@@ -54,7 +54,7 @@ namespace EffectLibraryTest
 
         public static string GetCode(BnshFile.ShaderCode shaderCode, BnshFile.ShaderReflectionData reflect = null)
         {
-            var control_code = new ControlShader(shaderCode.ControlCode);
+            var control_code = new ShaderLibrary.ControlShader(shaderCode.ControlCode);
 
             string code = TegraShaderTranslator.Decompile(shaderCode.ByteCode);
             float[] constants = control_code.GetConstantsAsFloats(shaderCode.ByteCode);
@@ -213,7 +213,7 @@ namespace EffectLibraryTest
 
         static string ApplyConstants(string code, float[] constants)
         {
-            string blockName = "vp_c1_1._m0";
+            string[] prefixes = {"vp_c1.data", "fp_c1.data"};
 
             Dictionary<string, float> constant_lookup = new Dictionary<string, float>();
 
@@ -229,10 +229,12 @@ namespace EffectLibraryTest
                         continue;
 
                     float value = constants[i];
-
-                    //Expected variable name stored in the block
-                    string variable_name = $"{blockName}[{index}].{swizzle}";
-                    constant_lookup.Add(variable_name, value);
+                    foreach (var p in prefixes)
+                    {
+                        //Expected variable name stored in the block
+                        string variable_name = $"{p}[{index}].{swizzle}";
+                        constant_lookup.Add(variable_name, value);
+                    }
 
                     swizzle = SwizzleShift(swizzle);
 
@@ -255,7 +257,7 @@ namespace EffectLibraryTest
                     if (line != null)
                     {
                         //swap variable with raw constant value
-                        if (line.Contains("vp_c1_1._m0"))
+                        if (line.Contains("vp_c1.data") || line.Contains("fp_c1.data"))
                         {
                             //find variable and replace it
                             foreach (var var in constant_lookup)

@@ -18,6 +18,8 @@ namespace ShaderLibrary
         /// </summary>
         public string Name { get; set; } = "dummy";
 
+        public byte[] OriginalBytes;
+
         /// <summary>
         /// Gets or sets the variation list.
         /// </summary>
@@ -139,6 +141,7 @@ namespace ShaderLibrary
         {
             /// <summary>
             /// Gets or sets vertex shader code.
+            public bool HasReflectionArray { get; set; } = false;
             /// </summary>
             public ShaderCode VertexShader { get; set; }
             /// <summary>

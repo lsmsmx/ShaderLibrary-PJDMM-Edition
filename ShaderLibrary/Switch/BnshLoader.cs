@@ -62,6 +62,7 @@ namespace ShaderLibrary.Switch
 
             if (program.header.ShaderReflectionOffset != 0)
             {
+                program.HasReflectionArray = true;
                 reader.SeekBegin(program.header.ShaderReflectionOffset);
                 //offsets
                 var offsets = reader.ReadUInt64s(6);

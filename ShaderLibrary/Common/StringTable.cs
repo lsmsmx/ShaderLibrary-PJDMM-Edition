@@ -46,10 +46,7 @@ namespace ShaderLibrary.Common
         {
             writer.AlignBytes(8);
 
-            // Sort the strings ordinally.
-            SortedList<string, StringEntry> sorted = new SortedList<string, StringEntry>(ResStringComparer.Instance);
-            foreach (KeyValuePair<string, StringEntry> entry in _savedStrings)
-                sorted.Add(entry.Key, entry.Value);
+            var sorted = _savedStrings;
 
             long start_pos = writer.BaseStream.Position;
 
